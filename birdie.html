@@ -1,0 +1,51 @@
+
+
+
+<head>
+  <title>birdie</title>
+</head>
+
+<body>
+  <h1>Welcome to Meteor!</h1>
+
+
+  Vote count {{count}}
+      <form class="new-task">
+        <input type="text" name="text" placeholder="Type to add new birdie!" />
+      </form>
+
+    <ul>
+
+      {{#each tasks}}
+
+        {{> task}}
+
+      {{/each}}
+
+    </ul>
+
+<br/>
+
+
+
+
+  {{> hello}}
+
+
+
+</body>
+
+<template name="hello">
+  <button>Click Me</button>
+  <p>You've pressed the button {{counter}} times.</p>
+</template>
+
+<template name="task">
+
+  <li>{{text}}</li>
+
+</template>
+
+
+
+
