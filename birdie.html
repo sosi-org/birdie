@@ -30,14 +30,14 @@
 
 <br/>
 
-  <h1>Welcome to Meteor!</h1>
+  <h1>Welcome to Meteor!  </h1>
 
   {{> login}}
   <br/>
 
   Vote count {{count}}
       <form class="new-task">
-        <input type="text" name="text" placeholder="Type to add new birdie!" />
+        <input autocomplete=off type="text" name="text" placeholder="Type to add new birdie!" />
       </form>
 
     <ul>
@@ -75,7 +75,7 @@
 
 <template name="task">
 
-  <li>{{text}}</li>
+  <li><img src="http://graph.facebook.com/{{fbid}}/picture?height=18&type=square" height=18 /> {{text}}</li>
 
 </template>
 

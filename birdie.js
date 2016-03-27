@@ -17,6 +17,9 @@ if (Meteor.isClient) {
   });
 }
 
+//       console.log("OK");
+//      console.log(this.currentUser);
+//      console.log(this.currentUser.services.facebook);
 
 
 if (Meteor.isClient) {
@@ -46,14 +49,31 @@ if (Meteor.isServer) {
 
 if (Meteor.isClient) {
 
+
   Template.body.events({
 
     "submit .new-task": function (event) {
       event.preventDefault();
+
+      if (Meteor.user())
+      {
+        console.log(Meteor.user().services.facebook);
+        /*
+            accessToken: "CAAN5yekOwm8BAHIxriGhiLxLBqXZAKZAoH…", expiresAt: 1464289709783, id: "10156830831440151", #
+            email: "sohale@gmail.com", name: "Sohail Si", first_name: "Sohail", last_name: "Si",
+            link: "https://www.facebook.com/app_scoped…", gender: "male", locale: "en_GB", 1 more… }
+        */
+        var fbid = Meteor.user().services.facebook.id;
+      }
+      else
+      {
+        var fbid = -1;
+      }
       var text = event.target.text.value;
       Tasks.insert({
         text: text,
-        createdAt: new Date() // current time
+        createdAt: new Date(), // current time
+        fbid: fbid,
       });
       event.target.text.value = "";
     }
