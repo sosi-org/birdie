@@ -2,7 +2,6 @@
 
 Tasks = new Mongo.Collection("tasks");
 
- 
 
 if (Meteor.isClient) {
  Template.body.helpers({
@@ -67,7 +66,7 @@ if (Meteor.isClient) {
       }
       else
       {
-        var fbid = -1;
+        var fbid = null;
       }
       var text = event.target.text.value;
       Tasks.insert({
