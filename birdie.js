@@ -104,3 +104,11 @@ Template.login.events({
 
 
 
+if (Meteor.isClient) {
+  Observe = Tasks.find({},{fields:{}}
+    ).observe({
+         added: () => {alert("added");},
+         chnaged: () => {alert("changed");},
+         removed: () => {alert("removed");}
+    })
+}
