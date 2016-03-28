@@ -16,6 +16,7 @@ if (Meteor.isClient) {
   });
 }
 
+
 //       console.log("OK");
 //      console.log(this.currentUser);
 //      console.log(this.currentUser.services.facebook);
@@ -105,10 +106,54 @@ Template.login.events({
 
 
 if (Meteor.isClient) {
-  Observe = Tasks.find({},{fields:{}}
-    ).observe({
-         added: () => {alert("added");},
-         chnaged: () => {alert("changed");},
-         removed: () => {alert("removed");}
-    })
+    console.log("is client");
+    var Observe;
+    var chart_counter;
+    Template.body.onCreated = function(){
+    }
+
+    //Why body
+    Template.body.onRendered = function(){
+      console.log("rendered" );
+      chart_counter = 0;
+        Observe = Tasks.find({},{fields:{}} ).observe({
+              added: (doc) => {
+                  chart_counter++;
+                 console.log("added");
+                 d3
+                 .select("#livechart")
+                 .append("text")
+                 .datum(doc)
+                 .text( (d) => {
+                      console.log("datum");
+                      console.log(d);
+                      //d: fbid, text, createAt
+                      return ""+d.text+"";
+                    })
+                 .attr("y",100+chart_counter*2)
+                 .attr("x",100)
+                 ;
+              },
+               chnaged: () => {console.log("changed");},
+               removed: () => {console.log("removed");}
+          });
+
+          /*
+          Observe2 = Tasks.find({},{fields:{}} ).count().observe({
+              added: (doc) => {
+                 console.log("count: added");
+              },
+               chnaged: () => {console.log("count: changed");},
+               removed: () => {console.log("count:removed");}
+          })
+          */
+
+    }
+
+    Template.body.onDestroyed = function(){
+        if(Observe){
+          console.log("Observe.stop");
+            Observe.stop();
+          }
+    }
 }
