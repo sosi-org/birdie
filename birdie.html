@@ -101,11 +101,11 @@
 
 <template name="frm">
       <form id="frm" class="new-task">
-       I vote for
+       I vote for {{myvote}}.<br>
         <select id="mycand">
           <option value="0">Undecided</option>
           {{#each candidates_h}}
-              <option value="{{cand_id}}">{{fullname}}</option>
+              <option value="{{cand_id}}" selected="{{selectVoter myvote}}" >{{fullname}} </option>
           {{/each}}
         </select>
         <input autocomplete=off type="text" name="text" 

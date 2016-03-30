@@ -24,8 +24,7 @@ if (Meteor.isClient) {
 
     user_votes_report: function(){
       return UsersVotes.find();
-    }
-
+    },
   });
 }
 
@@ -84,19 +83,11 @@ if (Meteor.isClient) {
       if (Meteor.user())
       {
         console.log(Meteor.user().services.facebook);
-        /*
-            accessToken: "CAAN5yekOwm8BAHIxriGhiLxLBqXZAKZAoH…", expiresAt: 1464289709783, id: "10156830831440151", #
-            email: "sohale@gmail.com", name: "Sohail Si", first_name: "Sohail", last_name: "Si",
-            link: "https://www.facebook.com/app_scoped…", gender: "male", locale: "en_GB", 1 more… }
-        */
         var fbid = Meteor.user().services.facebook.id;
-
-        //var my_current_vote = 1;
-        }
+      }
       else
       {
         var fbid = null;
-        //var my_current_vote = 0;
       }
 
       if(global_my_current_vote>0)
@@ -113,35 +104,26 @@ if (Meteor.isClient) {
             myvote: global_my_current_vote,
           });
 
-          setdict = {
+          setdict =
+          {
                   //text: text,
                   createdAt: new Date(), // current time
                   fbid: fbid,
                   myvote: global_my_current_vote,
-                };
+          };
 
-          //uid = UsersVotes.findOne({"fbid": fbid}).fetch();
           user_record = UsersVotes.findOne({"fbid": fbid});
-          //console.log("user_record = "+user_record);
-          //console.log(user_record);
-          //uid = user_record.fbid;
-          //uid = user_record._id;
           if(!user_record)
-            //first time
           {
-             uid2 = UsersVotes.insert(setdict);
-             console.log("INSERT: setdict=");
-             console.log(setdict);
+             //first time
+             UsersVotes.insert(setdict);
           }
           else
           {
               var uid = user_record._id;
               UsersVotes.update(
-                 //{"user": fbid},
                  {"_id": uid},
                  {$set:setdict});
-              console.log("UPDATE: setdict:");
-              console.log(setdict);
           }
           event.target.text.value = "";
           global_status = "OK.";
@@ -191,11 +173,35 @@ Template.login.events({
       candidates_h: function (){
         //return Candidates.find();
         return [
-            {cand_id:1, cand: "sanders", fullname: "*Bernie Sanders"},
+            {cand_id:1, cand: "sanders", fullname: "Bernie Sanders"},
             {cand_id:2, cand: "trump", fullname: "Donald Trump"},
             {cand_id:3, cand: "clinton", fullname: "Hillary Clinton"}
         ];
       },
+      myvote: function () {
+        console.log('myvOte');
+        if (Meteor.user())
+        {
+          var fbid = Meteor.user().services.facebook.id;
+          var current_user_vote_record = UsersVotes.findOne({"fbid": fbid});
+          var myvote = current_user_vote_record.myvote;
+          return myvote;
+        }
+        else
+        {
+          return "null";
+        }
+      },
+      selectVoter: function(optionVal){
+        //https://forums.meteor.com/t/how-to-set-default-value-for-html-select-element-with-meteor/1859
+        //'this' is each item in candidates_h:
+        if(optionVal == this.cand_id){
+          console.log("selected");
+          //console.log(this);
+          return 'selected';
+        }
+        //return 'q';
+      }
   });
 
 }
