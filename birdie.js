@@ -6,11 +6,13 @@ Tasks = new Mongo.Collection("tasks");
 if (Meteor.isClient) {
  Template.body.helpers({
     tasks: function () {
+      console.log("TASKS CALLED");
       // return Tasks.find({});
       return Tasks.find({}, {sort: {createdAt: -1}});
       //return Tasks.find({});
     },
     count: function (){
+      console.log("COUNT CALLED");
       return Tasks.find().count();
     }
   });
@@ -114,8 +116,21 @@ if (Meteor.isClient) {
 
     //Why body
     Template.body.onRendered = function(){
-      console.log("rendered" );
-      chart_counter = 0;
+        console.log("rendered" );
+        chart_counter = 0;
+
+
+        d3
+        .select("#livechart")
+        .append("text")
+        .text( (d) => {
+            return "count: ";
+        })
+        .attr("y",20) //doesnt work
+        .attr("x",10)
+        ;
+
+
         Observe = Tasks.find({},{fields:{}} ).observe({
               added: (doc) => {
                   chart_counter++;
@@ -124,7 +139,7 @@ if (Meteor.isClient) {
                  .select("#livechart")
                  .append("text")
                  .datum(doc)
-                 .text( (d) => {
+                 .text( d => {
                       console.log("datum");
                       console.log(d);
                       //d: fbid, text, createAt
@@ -133,6 +148,15 @@ if (Meteor.isClient) {
                  .attr("y",100+chart_counter*2)
                  .attr("x",100)
                  ;
+
+                 d3
+                 .select("#livechart")
+                 .select("text")
+                 .text( chart_counter )
+                 .attr("y",20)
+                 .attr("x",10)
+                 ;
+
               },
                chnaged: () => {console.log("changed");},
                removed: () => {console.log("removed");}
