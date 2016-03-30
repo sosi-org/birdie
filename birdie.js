@@ -2,6 +2,9 @@
 
 Tasks = new Mongo.Collection("tasks");
 
+Candidates = new Mongo.Collection("candidates");
+
+var global_my_current_vote = -1;
 
 if (Meteor.isClient) {
  Template.body.helpers({
@@ -14,7 +17,8 @@ if (Meteor.isClient) {
     count: function (){
       console.log("COUNT CALLED");
       return Tasks.find().count();
-    }
+    },
+
   });
 }
 
@@ -45,6 +49,19 @@ if (Meteor.isClient) {
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+
+    Candidates.remove({});
+    var c = Candidates.find({cand: "sanders"}).count();
+    if(c<1)
+    {
+      console.log("Adding candidates");
+      Candidates.insert({cand_id:1, cand: "sanders", fullname: "Bernie Sanders"});
+      Candidates.insert({cand_id:2, cand: "trump", fullname: "Donald Trump"});
+      Candidates.insert({cand_id:3, cand: "clinton", fullname: "Hillary Clinton"});
+    }
+    else{
+        console.log("Alreasy "+c+" Candidates.");
+    }
   });
 }
 
@@ -52,7 +69,7 @@ if (Meteor.isServer) {
 if (Meteor.isClient) {
 
 
-  Template.body.events({
+  Template.frm.events({
 
     "submit .new-task": function (event) {
       event.preventDefault();
@@ -66,21 +83,33 @@ if (Meteor.isClient) {
             link: "https://www.facebook.com/app_scoped…", gender: "male", locale: "en_GB", 1 more… }
         */
         var fbid = Meteor.user().services.facebook.id;
-      }
+
+        //var my_current_vote = 1;
+        }
       else
       {
         var fbid = null;
+        //var my_current_vote = 0;
       }
       var text = event.target.text.value;
       Tasks.insert({
         text: text,
         createdAt: new Date(), // current time
         fbid: fbid,
+        myvote: my_current_vote,
       });
       event.target.text.value = "";
-    }
-  });
+    },
 
+    "change #mycand": function (event, template) {
+        var cand = $(event.currentTarget).val();
+        console.log("cand : " + cand);
+        // additional code to do what you want with the cand
+        global_my_current_vote = cand;
+    }
+
+
+  });
 
 
 
@@ -103,9 +132,20 @@ Template.login.events({
 });
 
 
+
+
+  Template.frm.helpers({
+      candidates_h: function (){
+        //return Candidates.find();
+        return [
+            {cand_id:1, cand: "sanders", fullname: "*Bernie Sanders"},
+            {cand_id:2, cand: "trump", fullname: "Donald Trump"},
+            {cand_id:3, cand: "clinton", fullname: "Hillary Clinton"}
+        ];
+      },
+  });
+
 }
-
-
 
 if (Meteor.isClient) {
     console.log("is client");
