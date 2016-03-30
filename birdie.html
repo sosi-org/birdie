@@ -41,6 +41,13 @@
 
       {{> frm}}
 
+  <br/>
+      {{#each user_votes_report}}
+
+        {{> distilled}}
+
+      {{/each}}
+
     <ul>
 
       {{#each tasks}}
@@ -50,6 +57,7 @@
       {{/each}}
 
     </ul>
+
 
 <br/>
 
@@ -95,6 +103,7 @@
       <form id="frm" class="new-task">
        I vote for
         <select id="mycand">
+          <option value="0">Undecided</option>
           {{#each candidates_h}}
               <option value="{{cand_id}}">{{fullname}}</option>
           {{/each}}
@@ -103,4 +112,10 @@
         placeholder="Type to add new birdie!" />
       </form>
 
+</template>
+
+
+<template name="distilled">
+<img src="http://graph.facebook.com/{{fbid}}/picture?height=18&type=square" height=18 />
+ {{myvote}} <br/>
 </template>

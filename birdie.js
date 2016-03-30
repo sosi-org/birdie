@@ -4,7 +4,10 @@ Tasks = new Mongo.Collection("tasks");
 
 Candidates = new Mongo.Collection("candidates");
 
+UsersVotes = new Mongo.Collection("user_votes");
+
 var global_my_current_vote = -1;
+var global_status = 0;
 
 if (Meteor.isClient) {
  Template.body.helpers({
@@ -18,6 +21,10 @@ if (Meteor.isClient) {
       console.log("COUNT CALLED");
       return Tasks.find().count();
     },
+
+    user_votes_report: function(){
+      return UsersVotes.find();
+    }
 
   });
 }
@@ -60,7 +67,7 @@ if (Meteor.isServer) {
       Candidates.insert({cand_id:3, cand: "clinton", fullname: "Hillary Clinton"});
     }
     else{
-        console.log("Alreasy "+c+" Candidates.");
+        console.log("Already "+c+" Candidates.");
     }
   });
 }
@@ -91,14 +98,60 @@ if (Meteor.isClient) {
         var fbid = null;
         //var my_current_vote = 0;
       }
-      var text = event.target.text.value;
-      Tasks.insert({
-        text: text,
-        createdAt: new Date(), // current time
-        fbid: fbid,
-        myvote: my_current_vote,
-      });
-      event.target.text.value = "";
+
+      if(global_my_current_vote>0)
+      {
+          ;
+      }
+
+      if(fbid && global_my_current_vote>0){
+          var text = event.target.text.value;
+          Tasks.insert({
+            text: text,
+            createdAt: new Date(), // current time
+            fbid: fbid,
+            myvote: global_my_current_vote,
+          });
+
+          setdict = {
+                  //text: text,
+                  createdAt: new Date(), // current time
+                  fbid: fbid,
+                  myvote: global_my_current_vote,
+                };
+
+          //uid = UsersVotes.findOne({"fbid": fbid}).fetch();
+          user_record = UsersVotes.findOne({"fbid": fbid});
+          //console.log("user_record = "+user_record);
+          //console.log(user_record);
+          //uid = user_record.fbid;
+          //uid = user_record._id;
+          if(!user_record)
+            //first time
+          {
+             uid2 = UsersVotes.insert(setdict);
+             console.log("INSERT: setdict=");
+             console.log(setdict);
+          }
+          else
+          {
+              var uid = user_record._id;
+              UsersVotes.update(
+                 //{"user": fbid},
+                 {"_id": uid},
+                 {$set:setdict});
+              console.log("UPDATE: setdict:");
+              console.log(setdict);
+          }
+          event.target.text.value = "";
+          global_status = "OK.";
+      }
+      else{
+          alert("vote not registered. "+!!(fbid)+" "+(global_my_current_vote>0))
+          global_status = "vote not registered.";
+      }
+      console.log(global_status);
+
     },
 
     "change #mycand": function (event, template) {
