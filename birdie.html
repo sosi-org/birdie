@@ -1,6 +1,4 @@
 
-
-
 <head>
   <title>birdie</title>
 
@@ -101,7 +99,7 @@
 
 <template name="frm">
       <form id="frm" class="new-task">
-       I vote for {{myvote}}.<br>
+       I vote for <!-- {{myvote}} -->
         <select id="mycand">
           <option value="0">Undecided</option>
           {{#each candidates_h}}
@@ -117,5 +115,5 @@
 
 <template name="distilled">
 <img src="http://graph.facebook.com/{{fbid}}/picture?height=18&type=square" height=18 />
- {{myvote}} <br/>
+ {{myvote}} {{createdAt}} <br/>
 </template>

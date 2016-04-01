@@ -6,6 +6,9 @@ Candidates = new Mongo.Collection("candidates");
 
 UsersVotes = new Mongo.Collection("user_votes");
 
+CountsHistory = new Mongo.Collection("counts_history"); //FineGrained
+//BinsHistoryDaily = 
+
 var global_my_current_vote = -1;
 var global_status = 0;
 
@@ -52,9 +55,43 @@ if (Meteor.isClient) {
   });
 }
 
+function trigger2(){
+    var now = new Date();
+    interval = [now, now-5.0];
+
+    //UsersVotes.find({createdAt});
+    //***
+
+    last_ = now;
+}
+
+var lastTime = null;
+function trigger(){
+    if(Meteor.isServer)
+        console.log("s");
+    if(Meteor.isClient)
+        console.log("c");
+
+    var now = new Date();
+
+    var delta_sec = -1;
+    if(lastTime){
+        delta_sec = (now - lastTime)/1000.;
+        console.log(delta_sec);
+    }
+    if(delta_sec < 0. || delta_sec >= 1.)
+    {
+        trigger2();
+    }
+
+    lastTime = now;
+}
+
 if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
+
+    console.log("startup");
 
     Candidates.remove({});
     var c = Candidates.find({cand: "sanders"}).count();
@@ -68,8 +105,13 @@ if (Meteor.isServer) {
     else{
         console.log("Already "+c+" Candidates.");
     }
+
+
+    //CountsHistory 
+
   });
 }
+
 
 
 if (Meteor.isClient) {
@@ -82,7 +124,7 @@ if (Meteor.isClient) {
 
       if (Meteor.user())
       {
-        console.log(Meteor.user().services.facebook);
+        //console.log(Meteor.user().services.facebook);
         var fbid = Meteor.user().services.facebook.id;
       }
       else
@@ -106,10 +148,10 @@ if (Meteor.isClient) {
 
           setdict =
           {
-                  //text: text,
-                  createdAt: new Date(), // current time
-                  fbid: fbid,
-                  myvote: global_my_current_vote,
+              //text: text,
+              createdAt: new Date(), // current time
+              fbid: fbid,
+              myvote: global_my_current_vote,
           };
 
           user_record = UsersVotes.findOne({"fbid": fbid});
@@ -127,6 +169,8 @@ if (Meteor.isClient) {
           }
           event.target.text.value = "";
           global_status = "OK.";
+
+          trigger(setdict);
       }
       else{
           alert("vote not registered. "+!!(fbid)+" "+(global_my_current_vote>0))
@@ -138,7 +182,7 @@ if (Meteor.isClient) {
 
     "change #mycand": function (event, template) {
         var cand = $(event.currentTarget).val();
-        console.log("cand : " + cand);
+        //console.log("cand : " + cand);
         // additional code to do what you want with the cand
         global_my_current_vote = cand;
     }
@@ -179,7 +223,7 @@ Template.login.events({
         ];
       },
       myvote: function () {
-        console.log('myvOte');
+        //console.log('myvOte');
         if (Meteor.user())
         {
           var fbid = Meteor.user().services.facebook.id;
@@ -196,7 +240,7 @@ Template.login.events({
         //https://forums.meteor.com/t/how-to-set-default-value-for-html-select-element-with-meteor/1859
         //'this' is each item in candidates_h:
         if(optionVal == this.cand_id){
-          console.log("selected");
+          //console.log("selected");
           //console.log(this);
           return 'selected';
         }
@@ -207,7 +251,7 @@ Template.login.events({
 }
 
 if (Meteor.isClient) {
-    console.log("is client");
+    //console.log("is client");
     var Observe;
     var chart_counter;
     Template.body.onCreated = function(){
@@ -215,7 +259,7 @@ if (Meteor.isClient) {
 
     //Why body
     Template.body.onRendered = function(){
-        console.log("rendered" );
+        //console.log("rendered" );
         chart_counter = 0;
 
 
@@ -233,14 +277,14 @@ if (Meteor.isClient) {
         Observe = Tasks.find({},{fields:{}} ).observe({
               added: (doc) => {
                   chart_counter++;
-                 console.log("added");
+                 //console.log("added");
                  d3
                  .select("#livechart")
                  .append("text")
                  .datum(doc)
                  .text( d => {
-                      console.log("datum");
-                      console.log(d);
+                      //console.log("datum");
+                      //console.log(d);
                       //d: fbid, text, createAt
                       return ""+d.text+"";
                     })
